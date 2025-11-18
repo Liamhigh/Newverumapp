@@ -1,5 +1,20 @@
 # Building the APK with API Key
 
+## Quick Method (Recommended)
+
+Use the automated build script:
+
+```bash
+chmod +x build-apk.sh
+./build-apk.sh
+```
+
+The script will guide you through the process and check for common issues.
+
+## Manual Method
+
+If you prefer to build manually, follow these steps:
+
 ## Prerequisites
 - Android SDK installed
 - Java JDK installed
