@@ -121,8 +121,7 @@ const App = () => {
             const currentTime = new Date().toISOString();
             const contextText = `\n--- CONTEXTUAL DATA ---\n${locationInfo}\nCurrent Timestamp: ${currentTime}\n--- END CONTEXTUAL DATA ---\n`;
             
-            // FIX: Use `process.env.API_KEY` to align with the coding guidelines and resolve the TypeScript error.
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
             
             const hasPdfFile = files.some(file => file.type === 'application/pdf');
             const modelName = hasPdfFile ? 'gemini-2.5-pro' : 'gemini-2.5-flash';
