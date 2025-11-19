@@ -1,0 +1,55 @@
+name: Build Android APK (with web assets)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build_android_apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: "zulu"
+          java-version: "17"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create runtime config file
+        run: |
+          mkdir -p public
+          echo "window.__env = { VITE_API_KEY: '${{ secrets.VITE_API_KEY }}' };" > public/env-config.js
+
+      - name: Create production env file
+        run: echo "VITE_API_KEY=${{ secrets.VITE_API_KEY }}" > .env.production
+
+      - name: Build web assets
+        env:
+          VITE_API_KEY: ${{ secrets.VITE_API_KEY }}
+        run: npm run build
+
+      - name: Copy web assets to Android
+        run: |
+          mkdir -p android/app/src/main/assets/public
+          rm -rf android/app/src/main/assets/public/*
+          cp -r dist/* android/app/src/main/assets/public/
+
+      - name: Build Android APK
+        run: |
+          cd android
+          ./gradlew assembleRelease
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verum-omnis-release
+          path: android/app/build/outputs/apk/release/app-release-unsigned.apk
